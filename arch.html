@@ -1,1 +1,529 @@
-test
+
+<title>AEM Architecture Overview</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #0a0f1e;
+    color: #e8eaf0;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.6rem;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  .header .subtitle {
+    font-size: 1rem;
+    color: #7c8aaa;
+    font-weight: 300;
+  }
+
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #e84545, #c0392b);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  /* ---- LAYERS ---- */
+  .architecture {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .layer {
+    border-radius: 14px;
+    padding: 22px 28px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.5s forwards;
+  }
+
+  .layer:nth-child(1) { animation-delay: 0.1s; }
+  .layer:nth-child(2) { animation-delay: 0.2s; }
+  .layer:nth-child(3) { animation-delay: 0.3s; }
+  .layer:nth-child(4) { animation-delay: 0.4s; }
+  .layer:nth-child(5) { animation-delay: 0.5s; }
+  .layer:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .layer-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity: 0.7;
+  }
+
+  .layer-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    margin-bottom: 14px;
+    color: #fff;
+  }
+
+  .cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .card {
+    border-radius: 10px;
+    padding: 14px 18px;
+    flex: 1;
+    min-width: 150px;
+    position: relative;
+    transition: transform 0.2s;
+    cursor: default;
+  }
+
+  .card:hover { transform: translateY(-3px); }
+
+  .card-icon {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .card-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #fff;
+  }
+
+  .card-desc {
+    font-size: 0.72rem;
+    line-height: 1.5;
+    opacity: 0.7;
+  }
+
+  /* LAYER THEMES */
+  /* Users */
+  .layer-users {
+    background: linear-gradient(135deg, #1a1f35 0%, #1e2540 100%);
+    border: 1px solid #2d3561;
+  }
+  .layer-users .layer-label { color: #7b9ef0; }
+  .layer-users .card { background: rgba(123,158,240,0.1); border: 1px solid rgba(123,158,240,0.2); }
+
+  /* Presentation */
+  .layer-presentation {
+    background: linear-gradient(135deg, #1a2030 0%, #1e2840 100%);
+    border: 1px solid #2a4060;
+  }
+  .layer-presentation .layer-label { color: #56c8f5; }
+  .layer-presentation .card { background: rgba(86,200,245,0.08); border: 1px solid rgba(86,200,245,0.2); }
+
+  /* AEM Core */
+  .layer-core {
+    background: linear-gradient(135deg, #1e1a2e 0%, #261e38 100%);
+    border: 2px solid #7c4dff;
+    box-shadow: 0 0 30px rgba(124,77,255,0.15);
+  }
+  .layer-core .layer-label { color: #b388ff; }
+  .layer-core .card { background: rgba(124,77,255,0.1); border: 1px solid rgba(124,77,255,0.25); }
+
+  /* Content */
+  .layer-content {
+    background: linear-gradient(135deg, #1a2420 0%, #1e2e28 100%);
+    border: 1px solid #2d5040;
+  }
+  .layer-content .layer-label { color: #4ecb88; }
+  .layer-content .card { background: rgba(78,203,136,0.08); border: 1px solid rgba(78,203,136,0.2); }
+
+  /* Integrations */
+  .layer-integrations {
+    background: linear-gradient(135deg, #261e1a 0%, #301e18 100%);
+    border: 1px solid #5a3520;
+  }
+  .layer-integrations .layer-label { color: #ff8c42; }
+  .layer-integrations .card { background: rgba(255,140,66,0.08); border: 1px solid rgba(255,140,66,0.2); }
+
+  /* Infrastructure */
+  .layer-infra {
+    background: linear-gradient(135deg, #1a1a1a 0%, #222222 100%);
+    border: 1px solid #3a3a3a;
+  }
+  .layer-infra .layer-label { color: #aaaaaa; }
+  .layer-infra .card { background: rgba(200,200,200,0.06); border: 1px solid rgba(200,200,200,0.15); }
+
+  /* ---- ARROWS between layers ---- */
+  .connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+    gap: 8px;
+    opacity: 0.5;
+    font-size: 0.7rem;
+    color: #7c8aaa;
+  }
+
+  .connector::before, .connector::after {
+    content: '';
+    height: 1px;
+    width: 60px;
+    background: linear-gradient(90deg, transparent, #7c8aaa);
+  }
+  .connector::after {
+    background: linear-gradient(90deg, #7c8aaa, transparent);
+  }
+
+  /* ---- AEM AUTHOR / PUBLISH SPLIT ---- */
+  .twin {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .twin .half {
+    border-radius: 12px;
+    padding: 18px 22px;
+  }
+
+  .author-half {
+    background: rgba(124,77,255,0.08);
+    border: 1px dashed rgba(124,77,255,0.4);
+  }
+
+  .publish-half {
+    background: rgba(86,200,245,0.08);
+    border: 1px dashed rgba(86,200,245,0.4);
+  }
+
+  .half-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .author-half .half-title { color: #b388ff; }
+  .publish-half .half-title { color: #56c8f5; }
+
+  .step-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .step-list li {
+    font-size: 0.78rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.4;
+    color: #c0cce8;
+  }
+
+  .step-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .author-half .step-dot { background: rgba(124,77,255,0.3); color: #b388ff; }
+  .publish-half .step-dot { background: rgba(86,200,245,0.2); color: #56c8f5; }
+
+  /* ---- LEGEND ---- */
+  .legend {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 20px 24px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .legend-title {
+    width: 100%;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #7c8aaa;
+    margin-bottom: 4px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: #a0aec0;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 32px;
+    font-size: 0.72rem;
+    color: #3a4560;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="badge">Training Material</div>
+    <h1>Adobe Experience Manager</h1>
+    <p class="subtitle">Architecture Overview for Beginners &amp; Content Authors</p>
+  </div>
+
+  <div class="architecture">
+
+    <!-- LAYER 1: USERS -->
+    <div class="layer layer-users">
+      <div class="layer-label">Layer 1 — Who uses AEM</div>
+      <div class="cards">
+        <div class="card">
+          <span class="card-icon">✍️</span>
+          <div class="card-name">Content Authors</div>
+          <div class="card-desc">Create, edit, and publish pages using drag-and-drop tools in the AEM Author environment.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🎨</span>
+          <div class="card-name">Developers</div>
+          <div class="card-desc">Build templates, components, and custom functionality using Java, HTL, and OSGi.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">⚙️</span>
+          <div class="card-name">Administrators</div>
+          <div class="card-desc">Manage users, permissions, replication agents, and system configuration.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🌐</span>
+          <div class="card-name">End Users / Visitors</div>
+          <div class="card-desc">Browse the final published website delivered via the AEM Publish tier.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↕ HTTP / Browser</div>
+
+    <!-- LAYER 2: PRESENTATION -->
+    <div class="layer layer-presentation">
+      <div class="layer-label">Layer 2 — Presentation &amp; Delivery</div>
+      <div class="cards">
+        <div class="card">
+          <span class="card-icon">🖥️</span>
+          <div class="card-name">Dispatcher (CDN Cache)</div>
+          <div class="card-desc">Acts as a reverse proxy &amp; caching layer. Delivers static pages fast and protects the Publish server.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">📡</span>
+          <div class="card-name">CDN / Load Balancer</div>
+          <div class="card-desc">Distributes global traffic, reduces latency, and improves performance for visitors worldwide.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">📱</span>
+          <div class="card-name">Channels</div>
+          <div class="card-desc">Websites, mobile apps, email, IoT, digital signage — AEM delivers content to any channel.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↕ Sling URL Routing</div>
+
+    <!-- LAYER 3: AEM CORE (Author + Publish) -->
+    <div class="layer layer-core">
+      <div class="layer-label">Layer 3 — AEM Core Platform ★ Heart of AEM</div>
+
+      <div class="twin">
+        <div class="half author-half">
+          <div class="half-title">✏️ Author Environment</div>
+          <ul class="step-list">
+            <li><span class="step-dot">1</span> Author logs into AEM Author UI (Sites, Assets, Forms)</li>
+            <li><span class="step-dot">2</span> Creates &amp; edits pages using editable templates &amp; core components</li>
+            <li><span class="step-dot">3</span> Uses Workflows for review, approval &amp; translation</li>
+            <li><span class="step-dot">4</span> Activates (publishes) content to the Publish tier</li>
+          </ul>
+        </div>
+        <div class="half publish-half">
+          <div class="half-title">🚀 Publish Environment</div>
+          <ul class="step-list">
+            <li><span class="step-dot">1</span> Receives replicated content from Author</li>
+            <li><span class="step-dot">2</span> Renders pages dynamically via Sling &amp; HTL templates</li>
+            <li><span class="step-dot">3</span> Serves requests through Dispatcher cache</li>
+            <li><span class="step-dot">4</span> Scales horizontally with multiple Publish instances</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top: 14px;">
+        <div class="cards">
+          <div class="card">
+            <span class="card-icon">🔩</span>
+            <div class="card-name">OSGi Framework</div>
+            <div class="card-desc">Modular Java runtime powering all AEM services &amp; bundles (Apache Felix).</div>
+          </div>
+          <div class="card">
+            <span class="card-icon">🔀</span>
+            <div class="card-name">Apache Sling</div>
+            <div class="card-desc">Maps URLs to content nodes in the JCR repository. The rendering engine of AEM.</div>
+          </div>
+          <div class="card">
+            <span class="card-icon">📐</span>
+            <div class="card-name">HTL / Templates</div>
+            <div class="card-desc">HTML Template Language — AEM's secure, server-side templating system used by developers.</div>
+          </div>
+          <div class="card">
+            <span class="card-icon">🔁</span>
+            <div class="card-name">Replication</div>
+            <div class="card-desc">Syncs activated content from Author to Publish instances automatically.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↕ JCR / Oak Storage API</div>
+
+    <!-- LAYER 4: CONTENT REPOSITORY -->
+    <div class="layer layer-content">
+      <div class="layer-label">Layer 4 — Content Repository</div>
+      <div class="cards">
+        <div class="card">
+          <span class="card-icon">🌳</span>
+          <div class="card-name">JCR (Java Content Repository)</div>
+          <div class="card-desc">The central tree-structured database where all content, assets, and config are stored as nodes.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🪨</span>
+          <div class="card-name">Apache Jackrabbit Oak</div>
+          <div class="card-desc">The underlying JCR implementation. Supports MongoDB or Segment Node Store for storage.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🖼️</span>
+          <div class="card-name">DAM (Digital Asset Mgmt)</div>
+          <div class="card-desc">Stores images, videos, PDFs. Authors pick assets from DAM to place on pages.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🔍</span>
+          <div class="card-name">Apache Lucene / Oak Index</div>
+          <div class="card-desc">Full-text search indexing for content queries and fast content discovery.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↕ APIs &amp; Connectors</div>
+
+    <!-- LAYER 5: INTEGRATIONS -->
+    <div class="layer layer-integrations">
+      <div class="layer-label">Layer 5 — Integrations &amp; Adobe Ecosystem</div>
+      <div class="cards">
+        <div class="card">
+          <span class="card-icon">📊</span>
+          <div class="card-name">Adobe Analytics</div>
+          <div class="card-desc">Tracks visitor behaviour. Authors can tag pages with analytics events.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🎯</span>
+          <div class="card-name">Adobe Target</div>
+          <div class="card-desc">Personalization &amp; A/B testing. Deliver different content to different audiences.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🔗</span>
+          <div class="card-name">Adobe Launch / Tags</div>
+          <div class="card-desc">Tag management system — deploy marketing scripts without developer involvement.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">💬</span>
+          <div class="card-name">Third-Party APIs</div>
+          <div class="card-desc">CRM, e-commerce, translation services, social media, and more via REST/GraphQL.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector">↕ OS / Cloud Infrastructure</div>
+
+    <!-- LAYER 6: INFRASTRUCTURE -->
+    <div class="layer layer-infra">
+      <div class="layer-label">Layer 6 — Infrastructure</div>
+      <div class="cards">
+        <div class="card">
+          <span class="card-icon">☁️</span>
+          <div class="card-name">AEM as a Cloud Service</div>
+          <div class="card-desc">Adobe-managed, auto-scaling cloud deployment. No manual patching. Latest AEM always.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🏢</span>
+          <div class="card-name">On-Premise / AMS</div>
+          <div class="card-desc">Self-hosted on own servers or Adobe Managed Services. Full infrastructure control.</div>
+        </div>
+        <div class="card">
+          <span class="card-icon">🐳</span>
+          <div class="card-name">Containers / Kubernetes</div>
+          <div class="card-desc">AEM Cloud uses Docker containers orchestrated by Kubernetes for resilience &amp; scale.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /architecture -->
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-title">Quick Reference</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7b9ef0;"></div> Users &amp; Roles</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#56c8f5;"></div> Delivery Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7c4dff;"></div> AEM Core (Author &amp; Publish)</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4ecb88;"></div> Content Repository</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff8c42;"></div> Integrations</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#aaa;"></div> Infrastructure</div>
+    <div class="legend-item" style="margin-left: auto; font-size:0.7rem; color:#556;">★ Purple border = Core AEM Platform</div>
+  </div>
+
+  <div class="footer">Adobe Experience Manager · Architecture Overview · Training Use Only</div>
+
+</div>
+</body>
+</html>
